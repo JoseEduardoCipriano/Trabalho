@@ -1,0 +1,67 @@
+---
+title: "José Eduardo Cipriano — Avaliação 2 (Taxa Selic)"
+format: html
+editor: visual
+---
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+library(GetBCBData)
+library(gganimate)
+library(gifski)
+library(ragg)        # dispositivo gráfico sem dependência de X11
+```
+
+## VARIÁVEL
+
+A **Taxa Selic (meta)** é a taxa básica de juros da economia brasileira, definida pelo Comitê de Política Monetária (Copom) do Banco Central.\
+Ela é expressa em termos de percentual ao ano (% a.a.) e serve de referência para as demais taxas praticadas em operações de crédito, financiamentos e investimentos.\
+Monitorar sua trajetória é fundamental para entender a postura da política monetária e suas implicações sobre crescimento econômico, inflação e expectativas de mercado.
+
+```{r download-data, message=FALSE, warning=FALSE}
+id_selic <- 432   # Série 432 – Selic (meta)
+
+df_selic <- gbcbd_get_series(id          = id_selic,
+                             first.date  = '2000-01-01',
+                             last.date   = Sys.Date(),
+                             format.data = 'long',
+                             use.memoise = TRUE,
+                             cache.path  = tempdir(),
+                             do.parallel = FALSE)
+```
+
+## GRÁFICO COM SÉRIE TEMPORAL
+
+O gráfico abaixo apresenta a evolução histórica da meta da Taxa Selic desde 2000.\
+A animação enfatiza as mudanças de nível ao longo do tempo, permitindo identificar rapidamente ciclos de aperto e afrouxamento monetário.
+
+```{r grafico-selic, message=FALSE, warning=FALSE, fig.cap="Taxa Selic (meta) — % a.a."}
+g_base <- ggplot(df_selic, aes(x = ref.date, y = value)) +
+  geom_line(size = 0.7) +
+  labs(title = 'Taxa Selic (meta): {round(frame_along, 2)}% a.a.',
+       x = 'Ano', y = '% a.a.') +
+  theme_minimal(base_size = 12)
+
+anim <- g_base + transition_reveal(ref.date)
+
+# usa ragg::agg_png como dispositivo para evitar o erro no png()
+animate(anim,
+        nframes  = 150,
+        fps      = 6,
+        width    = 850,
+        height   = 450,
+        device   = "ragg_png",
+        renderer = gifski_renderer("taxa_selic.gif"))
+```
+
+```{r mostrar-gif, echo=FALSE}
+knitr::include_graphics("taxa_selic.gif")
+```
+
+### Comentários
+
+-   **2003 – 2005:** ciclo de aperto monetário diante de forte desvalorização cambial pós‑crise de confiança de 2002.\
+-   **2009:** rápida redução para mitigar os efeitos da crise financeira global.\
+-   **2016 – 2017:** queda expressiva após o pico inflacionário de 2015.\
+-   **2021 – 2023:** forte elevação para conter a re‑aceleração inflacionária no pós‑pandemia.\
+-   **Mar 2025:** Selic atinge **14,75 % a.a.**, maior patamar desde 2006, refletindo preocupações com persistência inflacionária.

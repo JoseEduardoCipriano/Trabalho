@@ -1,0 +1,54 @@
+---
+title: "José Eduardo Cipriano — Avaliação 2 (Taxa Selic)"
+format: html
+editor: visual
+---
+
+```{r load-packages, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(GetBCBData)
+library(gganimate)
+library(gifski)
+library(ragg)        # dispositivo gráfico sem dependência de X11
+```
+
+## VARIÁVEL
+
+A **Taxa Selic (meta)** é a taxa básica de juros da economia brasileira, definida pelo Comitê de Política Monetária (Copom) do Banco Central.  
+Ela é expressa em termos de percentual ao ano (% a.a.) e serve de referência para as demais taxas praticadas em operações de crédito, financiamentos e investimentos.  
+Monitorar sua trajetória é fundamental para entender a postura da política monetária e suas implicações sobre crescimento econômico, inflação e expectativas de mercado.
+
+```{r download-data, echo=FALSE, message=FALSE, warning=FALSE}
+id_selic <- 432   # Série 432 – Selic (meta)
+
+df_selic <- gbcbd_get_series(id          = id_selic,
+                             first.date  = '2000-01-01',
+                             last.date   = Sys.Date(),
+                             format.data = 'long',
+                             use.memoise = TRUE,
+                             cache.path  = tempdir(),
+                             do.parallel = FALSE)
+```
+
+## GRÁFICO COM SÉRIE TEMPORAL
+
+O gráfico abaixo apresenta a evolução histórica da meta da Taxa Selic desde 2000.  
+A animação enfatiza as mudanças de nível ao longo do tempo, permitindo identificar rapidamente ciclos de aperto e afrouxamento monetário.
+
+
+
+
+
+
+```{r gif-selic, echo=FALSE, echo=FALSE}
+knitr::include_graphics("taxa_selic.gif")
+```
+
+
+### Comentários
+
+- **2003 – 2005:** ciclo de aperto monetário diante de forte desvalorização cambial pós‑crise de confiança de 2002.  
+- **2009:** rápida redução para mitigar os efeitos da crise financeira global.  
+- **2016 – 2017:** queda expressiva após o pico inflacionário de 2015.  
+- **2021 – 2023:** forte elevação para conter a re‑aceleração inflacionária no pós‑pandemia.  
+- **Mar 2025:** Selic atinge **14,75 % a.a.**, maior patamar desde 2006, refletindo preocupações com persistência inflacionária.
